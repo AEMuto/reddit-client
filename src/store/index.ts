@@ -1,10 +1,11 @@
-import type { Action, ThunkAction } from "@reduxjs/toolkit";
+// import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 // Import the slices and APIs to be included in the store
 import { apiSlice } from "@/features/api/apiSlice";
+import { redditSlice } from "./redditSlice";
 
-const rootReducer = combineSlices(apiSlice);
+const rootReducer = combineSlices(redditSlice, apiSlice);
 // Infer the `RootState` type from the root reducer
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -33,9 +34,11 @@ export default store;
 export type AppStore = typeof store;
 // Infer the `AppDispatch` type from the store itself
 export type AppDispatch = AppStore["dispatch"];
-export type AppThunk<ThunkReturnType = void> = ThunkAction<
-  ThunkReturnType,
-  RootState,
-  unknown,
-  Action
->;
+
+// Not using thunks yet, but leaving this here for future reference
+// export type AppThunk<ThunkReturnType = void> = ThunkAction<
+//   ThunkReturnType,
+//   RootState,
+//   unknown,
+//   Action
+// >;
