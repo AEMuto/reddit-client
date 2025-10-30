@@ -12,7 +12,8 @@ export const Subreddits = () => {
   const [count, setCount] = useState(0);
   const [queryParams, setQueryParams] = useState<QueryParams>();
 
-  const { data, error, isLoading } = useGetSubredditsQuery(queryParams);
+  const { data, error, isLoading, isFetching } =
+    useGetSubredditsQuery(queryParams);
   const dispatch = useAppDispatch();
 
   const handleSubredditSelect = (subreddit: string) => {
@@ -56,13 +57,12 @@ export const Subreddits = () => {
   if (!data) return <div>No subreddits found.</div>;
   return (
     <div className="p-4 border-2">
-      <ul className="flex flex-wrap justify-start items-start gap-2">
-        {import.meta.env.MODE === "development" && <li>Count: {count}</li>}
+      <div className="flex flex-wrap justify-start items-start gap-2">
         {data.data.children.map(({ data: subreddit }) => {
           const hasBgColor = subreddit.primary_color.length > 0;
           return hasBgColor ? (
             <Button
-              className="cursor-pointer hover:brightness-90"
+              className="cursor-pointer hover:brightness-90 rounded-none"
               style={{
                 backgroundColor: subreddit.primary_color,
                 color: getContrastColor(subreddit.primary_color),
@@ -74,7 +74,7 @@ export const Subreddits = () => {
             </Button>
           ) : (
             <Button
-              className="cursor-pointer bg-transparent border border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 text-foreground"
+              className="rounded-none cursor-pointer bg-transparent border border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 text-foreground"
               key={subreddit.id}
               onClick={() => handleSubredditSelect(subreddit.display_name)}
             >
@@ -82,19 +82,25 @@ export const Subreddits = () => {
             </Button>
           );
         })}
-      </ul>
+        {import.meta.env.MODE === "development" && (
+          <div className="self-center ml-auto font-mono text-sm border-2 border-gray-600">
+            <span className="px-1 font-bold">Dev</span>|
+            <span className="px-1">index: {count}</span>
+          </div>
+        )}
+      </div>
       <div className="flex justify-between gap-4 mt-4">
         <Button
           className="cursor-pointer"
           onClick={handlePrevious}
-          disabled={!data.data.before}
+          disabled={!data.data.before || isLoading || isFetching}
         >
           Previous
         </Button>
         <Button
           className="cursor-pointer"
           onClick={handleNext}
-          disabled={!data.data.after}
+          disabled={!data.data.after || isLoading || isFetching}
         >
           Next
         </Button>
@@ -105,18 +111,26 @@ export const Subreddits = () => {
 
 const SkeletonSubreddits = ({ count = 25 }: { count?: number }) => {
   return (
-    <>
-      {Array.from({ length: count }).map((_, index) => {
-        // Random width between 35 and 160
-        const width = getRandomInt(35, 160);
-        return (
-          <Skeleton
-            key={index}
-            className={`h-5 w-(--skeleton-width) mb-2`}
-            style={{ "--skeleton-width": `${width}px` } as React.CSSProperties}
-          />
-        );
-      })}
-    </>
+    <div className="p-4 border-2">
+      <div className="flex flex-wrap justify-start items-start gap-2">
+        {Array.from({ length: count }).map((_, index) => {
+          // Random width between 35 and 160
+          const width = getRandomInt(35, 160);
+          return (
+            <Skeleton
+              key={index}
+              className={`h-5 w-(--skeleton-width) rounded-none`}
+              style={
+                { "--skeleton-width": `${width}px` } as React.CSSProperties
+              }
+            />
+          );
+        })}
+      </div>
+      <div className="flex justify-between gap-4 mt-4">
+        <Button disabled>Previous</Button>
+        <Button disabled>Next</Button>
+      </div>
+    </div>
   );
 };
