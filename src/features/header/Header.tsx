@@ -5,7 +5,7 @@ import {
   InputGroupAddon,
   InputGroupButton,
 } from "@/components/ui/input-group";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setSearchTerm } from "@/store/redditSlice";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
@@ -14,17 +14,17 @@ import { FaReddit } from "react-icons/fa";
 export const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useAppDispatch();
-
+  const subreddit = useAppSelector((state) => state.reddit.selectedSubreddit);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle search submission logic here
     dispatch(setSearchTerm(searchQuery));
   };
   return (
-    <header className="p-4 min-h-16 bg-foreground text-background dark:bg-background dark:text-foreground flex justify-between items-center">
+    <header className="p-4 h-(--header-height) bg-foreground text-background dark:bg-background dark:text-foreground flex justify-between items-center">
       <div className="flex items-center gap-3">
         <FaReddit className="size-8 text-red-300" />
-        <h1 className="text-2xl font-bold">Jezzit</h1>
+        <h1 className="text-2xl font-bold">Jezzit {subreddit && `- r/${subreddit}`}</h1>
       </div>
       <form onSubmit={handleSubmit}>
         <Field>
