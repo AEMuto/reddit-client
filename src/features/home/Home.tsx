@@ -11,7 +11,7 @@ export const Home = () => {
     console.log("Selected Subreddit:", selectedSubreddit);
   }, [searchTerm, selectedSubreddit]);
   return (
-    <main className="p-4 bg-gray-300">
+    <main className="p-4 bg-gray-300 min-h-(--main-height)">
       <Subreddits />
     </main>
   );
