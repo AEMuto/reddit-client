@@ -6,6 +6,11 @@ export type QueryParams =
   | { count: number; before: string; after?: never }
   | void;
 
+export type PostsQueryParams = {
+  subreddit: string;
+  queryParams?: QueryParams;
+}
+
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ 
@@ -28,12 +33,24 @@ export const apiSlice = createApi({
         return `/subreddits.json?${queryParams.toString()}`;
       },
     }),
+    getPosts: builder.query<PostListResponse, PostsQueryParams>({
+      query: ({ subreddit, queryParams }) => {
+        if (!queryParams) return `/r/${subreddit}.json`;
+
+        const urlParams = new URLSearchParams();
+        urlParams.set('count', queryParams.count.toString());
+
+        if (queryParams.after) {
+          urlParams.set('after', queryParams.after);
+        } else if (queryParams.before) {
+          urlParams.set('before', queryParams.before);
+        }
+
+        return `/r/${subreddit}.json?${urlParams.toString()}`;
+      },
+    }),
     getSearch: builder.query<PostListResponse, string>({
       query: (searchTerm) => `/search.json?q=${encodeURIComponent(searchTerm)}`,
-    }),
-    getPosts: builder.query<PostListResponse, string | undefined>({
-      query: (subreddit) =>
-        subreddit ? `/r/${subreddit}.json` : '/.json',
     }),
     getComments: builder.query<CommentResponse, { subreddit: string; postId: string }>({
       query: ({ subreddit, postId }) =>
