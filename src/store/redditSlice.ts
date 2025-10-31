@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   searchTerm: "",
-  selectedSubreddit: "",
+  selectedSubreddit: "Home",
 };
 
 export type AppState = typeof initialState;
