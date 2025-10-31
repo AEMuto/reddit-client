@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { useAppDispatch } from "@/store/hooks";
-import { useGetSubredditsQuery } from "../api/apiSlice";
 import { setSelectedSubreddit } from "@/store/redditSlice";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import getRandomInt from "@/utils/getRandomInt";
+import { getRandomInt, getContrastColor } from "@/utils";
+import { useGetSubredditsQuery } from "../api/apiSlice";
 import type { QueryParams } from "../api/apiSlice";
-import { getContrastColor } from "@/utils/getContrastColor";
 
 export const Subreddits = () => {
-  const [count, setCount] = useState(0);
+  const dispatch = useAppDispatch();
+  const [index, setIndex] = useState(0);
+  const [distance] = useState(25);
   const [queryParams, setQueryParams] = useState<QueryParams>();
 
   const { data, error, isLoading, isFetching } =
     useGetSubredditsQuery(queryParams);
-  const dispatch = useAppDispatch();
 
   const handleSubredditSelect = (subreddit: string) => {
     // Dispatch action to set selected subreddit
@@ -40,15 +40,15 @@ export const Subreddits = () => {
   const handlePrevious = () => {
     if (!data?.data.before) return;
     // For the API call, we use the current count + 1 with the 'before' cursor
-    setQueryParams({ count: count + 1, before: data.data.before });
+    setQueryParams({ count: index + 1, before: data.data.before });
     // Then, we update our local state to reflect the new page's position
-    setCount(count - 25);
+    setIndex(index - distance);
   };
 
   const handleNext = () => {
     if (!data?.data.after) return;
-    const newCount = count + 25;
-    setCount(newCount);
+    const newCount = index + distance;
+    setIndex(newCount);
     setQueryParams({ count: newCount, after: data.data.after });
   };
 
@@ -85,7 +85,7 @@ export const Subreddits = () => {
         {import.meta.env.MODE === "development" && (
           <div className="self-center ml-auto font-mono text-sm border-2 border-gray-600">
             <span className="px-1 font-bold">Dev</span>|
-            <span className="px-1">index: {count}</span>
+            <span className="px-1">index: {index}</span>
           </div>
         )}
       </div>
