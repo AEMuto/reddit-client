@@ -1,7 +1,8 @@
-import { useAppSelector } from "@/store/hooks";
-import { Subreddits } from "../subreddits/Subreddits";
-import { selectSearchTerm, selectSelectedSubreddit } from "@/store/redditSlice";
 import { useEffect } from "react";
+import { useAppSelector } from "@/store/hooks";
+import { selectSearchTerm, selectSelectedSubreddit } from "@/store/redditSlice";
+import { Subreddits } from "../subreddits/Subreddits";
+import { Posts } from "../posts/Posts";
 
 export const Home = () => {
   const searchTerm = useAppSelector(selectSearchTerm);
@@ -13,6 +14,7 @@ export const Home = () => {
   return (
     <main className="p-4 bg-gray-300 min-h-(--main-height)">
       <Subreddits />
+      <Posts />
     </main>
   );
 };
